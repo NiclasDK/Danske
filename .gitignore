@@ -1,0 +1,40 @@
+# .NET Core build outputs
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+*.dbmdl
+*.bak
+*.log
+
+# ASP.NET Core
+*.user
+*.suo
+*.userosscache
+*.suo
+*.vssscc
+*.vs/
+.vs/
+.vscode/
+*.code-workspace
+
+# Rider
+.idea/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+
+# Environment files
+.env
+
+# Docker files
+docker-compose.override.yml
+
+# NuGet packages
+*.nupkg
+*.snupkg
