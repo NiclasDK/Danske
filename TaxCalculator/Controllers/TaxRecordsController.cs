@@ -107,12 +107,12 @@ namespace TaxCalculator.Controllers
                 .Select(tr => tr.TaxRate)
                 .FirstOrDefaultAsync();
 
-            if (taxRecord == null)
+            if (taxRate == null || taxRate == 0)
             {
                 return NotFound("No tax rate found for the given date.");
             }
 
-            return taxRecord.TaxRate;
+            return taxRate;
         }
 
         private bool TaxRecordExists(int id)
