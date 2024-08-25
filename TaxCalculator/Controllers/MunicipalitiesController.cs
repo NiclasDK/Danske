@@ -20,7 +20,7 @@ namespace TaxCalculator.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Municipality>>> GetMunicipalities()
         {
-            return await _context.Municipalities.ToListAsync();
+            return await _context.Municipalities.Include(m => m.TaxRecords).ToListAsync();
         }
 
         // GET: api/Municipalities/5
