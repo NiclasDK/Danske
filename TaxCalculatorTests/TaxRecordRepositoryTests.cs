@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using NuGet.Protocol.Core.Types;
 using TaxCalculator.Data;
 using TaxCalculator.Models;
 using TaxCalculator.Repositories;
@@ -76,6 +77,26 @@ namespace TaxCalculatorTests
             // Assert
             Assert.NotNull(result);
             Assert.Equal(0.1m, result.TaxRate);
+        }
+
+        [Fact]
+        public async Task Add_AddsTaxRecordSuccessfully()
+        {
+            var taxRecord4 = new TaxRecord
+            {
+                Id = 4,
+                MunicipalityId = 5000,
+                TaxRate = 0.2m,
+                StartDate = new DateTime(2024, 1, 1),
+                EndDate = new DateTime(2024, 12, 31),
+                TaxPrioritization = Priority.Yearly
+            };
+            // Act
+            await _taxRecordRepository.Add(taxRecord4);
+            _taxRecordRepository.SaveChangesAsync();
+
+            // Assert
+            Assert.Equal(4, _taxRecordRepository.GetTaxRecords().Result.Count());
         }
     }
 }

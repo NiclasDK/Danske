@@ -27,7 +27,7 @@ namespace TaxCalculator.Repositories
                 .Where(m => m.Name == municipalityName)
                 .SelectMany(m => m.TaxRecords)
                 .Where(tr => tr.StartDate <= date && tr.EndDate >= date)
-                .OrderByDescending(tr => (int)tr.TaxPrioritization)
+                .OrderBy(tr => tr.TaxPrioritization)
                 .Select(tr => tr.TaxRate)
                 .FirstOrDefaultAsync();
 
