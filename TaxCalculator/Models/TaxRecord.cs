@@ -9,6 +9,13 @@ namespace TaxCalculator.Models
         public required int MunicipalityId { get; set; }
         public decimal TaxRate { get; set; }
         public DateTime StartDate { get; set; }
-        public DateTime? EndDate { get; set; }
+        public Priority TaxPrioritization { get; set; }
+    }
+    public enum Priority
+    {
+        Yearly = 4,
+        Monthly = 3,
+        Weekly = 2,
+        Daily = 1
     }
 }
