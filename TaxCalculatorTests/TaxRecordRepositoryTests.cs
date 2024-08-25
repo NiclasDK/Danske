@@ -32,17 +32,17 @@ namespace TaxCalculatorTests
                 {
                     Id = 1,
                     MunicipalityId = municipality.MunicipalityCode,
-                    TaxRate = 0.1m,
+                    TaxRate = 0.2m,
                     StartDate = new DateTime(2024, 1, 1),
                     EndDate = new DateTime(2024, 12, 31),
-                    TaxPrioritization = Priority.Daily
+                    TaxPrioritization = Priority.Weekly
                 };
 
                 var municipality2 = new Municipality { MunicipalityCode = 2000, Name = "Frederiksberg" };
                 var taxRecord2 = new TaxRecord
                 {
                     Id = 2,
-                    MunicipalityId = municipality2.MunicipalityCode,
+                    MunicipalityId = municipality.MunicipalityCode,
                     TaxRate = 0.1m,
                     StartDate = new DateTime(2024, 1, 1),
                     EndDate = new DateTime(2024, 12, 31),
@@ -53,7 +53,7 @@ namespace TaxCalculatorTests
                 {
                     Id = 3,
                     MunicipalityId = municipality.MunicipalityCode,
-                    TaxRate = 0.2m,
+                    TaxRate = 0.3m,
                     StartDate = new DateTime(2024, 1, 1),
                     EndDate = new DateTime(2024, 12, 31),
                     TaxPrioritization = Priority.Yearly
@@ -97,6 +97,16 @@ namespace TaxCalculatorTests
 
             // Assert
             Assert.Equal(4, _taxRecordRepository.GetTaxRecords().Result.Count());
+        }
+
+        [Fact]
+        public async Task FindMunicipalityTaxRateAtDate_ReturnsCorrectTaxRate()
+        {
+            // Act
+            var result = await _taxRecordRepository.FindMunicipalityTaxRateAtDate("Copenhagen", new DateTime(2024, 8, 25));
+
+            // Assert
+            Assert.Equal(0.1m, result);
         }
     }
 }

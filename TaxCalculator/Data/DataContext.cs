@@ -51,7 +51,7 @@ namespace TaxCalculator.Data
                     MunicipalityId = 1000,
                     TaxRate = 0.3M,
                     StartDate = DateTime.Parse("2024-01-01T00:00:00Z"),
-                    EndDate = DateTime.Parse("2024-01-07T23:59:59Z"),
+                    EndDate = DateTime.Parse("2024-12-31T23:59:59Z"),
                     TaxPrioritization = Priority.Weekly
                 },
                 new TaxRecord
