@@ -1,6 +1,8 @@
 
 using Microsoft.EntityFrameworkCore;
 using TaxCalculator.Data;
+using TaxCalculator.Interfaces;
+using TaxCalculator.Repositories;
 
 namespace TaxCalculator
 {
@@ -19,6 +21,8 @@ namespace TaxCalculator
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddScoped<IMunicipalityRepository, MunicipalityRepository>();
+
 
             var app = builder.Build();
 

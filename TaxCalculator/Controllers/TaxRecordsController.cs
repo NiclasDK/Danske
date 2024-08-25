@@ -103,11 +103,9 @@ namespace TaxCalculator.Controllers
                 .Where(m => m.Name == municipalityName)
                 .SelectMany(m => m.TaxRecords)
                 .Where(tr => tr.StartDate <= date && tr.EndDate >= date)
-                .OrderByDescending(tr => (int)tr.TaxPrioritization)
+                .OrderByDescending(tr => tr.TaxPrioritization)
                 .Select(tr => tr.TaxRate)
                 .FirstOrDefaultAsync();
-
-            //TODO something wrong with the order.
 
             if (taxRate == null || taxRate == 0)
             {

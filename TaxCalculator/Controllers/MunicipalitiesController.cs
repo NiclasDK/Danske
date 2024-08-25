@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TaxCalculator.Data;
+using TaxCalculator.Interfaces;
 using TaxCalculator.Models;
 
 namespace TaxCalculator.Controllers
@@ -9,25 +10,32 @@ namespace TaxCalculator.Controllers
     [ApiController]
     public class MunicipalitiesController : ControllerBase
     {
-        private readonly DataContext _context;
+        private readonly IMunicipalityRepository _municipalityRepository;
 
-        public MunicipalitiesController(DataContext context)
+        public MunicipalitiesController(IMunicipalityRepository municipalityRepository)
         {
-            _context = context;
+            _municipalityRepository = municipalityRepository;
         }
 
         // GET: api/Municipalities
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Municipality>>> GetMunicipalities()
+        public async Task<ActionResult<IEnumerable<Municipality>>> Getmunicipalities()
         {
-            return await _context.Municipalities.Include(m => m.TaxRecords).ToListAsync();
+            var municipalitiesList = await _municipalityRepository.GetMunicipalitiesAsync();
+
+            if (municipalitiesList == null)
+            {
+                NotFound();
+            }
+
+            return Ok(municipalitiesList);
         }
 
         // GET: api/Municipalities/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Municipality>> GetMunicipality(int id)
         {
-            var municipality = await _context.Municipalities.FindAsync(id);
+            var municipality = await _municipalityRepository.GetMunicipalityById(id);
 
             if (municipality == null)
             {
@@ -37,11 +45,11 @@ namespace TaxCalculator.Controllers
             return Ok(municipality);
         }
 
-        // GET: api/Municipalities/5
-        [HttpGet("{name}")]
+        // GET: api/Municipalities/Copenhagen
+        [HttpGet("name/{name}")]
         public async Task<ActionResult<Municipality>> GetMunicipalityByName(string name)
         {
-            var municipality = await _context.Municipalities.FirstOrDefaultAsync(m => m.Name == name);
+            var municipality = await _municipalityRepository.GetMunicipalityByName(name);
 
             if (municipality == null)
             {
@@ -52,7 +60,6 @@ namespace TaxCalculator.Controllers
         }
 
         // PUT: api/Municipalities/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutMunicipality(int id, Municipality municipality)
         {
@@ -61,11 +68,11 @@ namespace TaxCalculator.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(municipality).State = EntityState.Modified;
+            _municipalityRepository.SetEntryStateModified(municipality);
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _municipalityRepository.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -87,8 +94,8 @@ namespace TaxCalculator.Controllers
         [HttpPost]
         public async Task<ActionResult<Municipality>> PostMunicipality(Municipality municipality)
         {
-            _context.Municipalities.Add(municipality);
-            await _context.SaveChangesAsync();
+            await _municipalityRepository.Add(municipality);
+            await _municipalityRepository.SaveChangesAsync();
 
             return CreatedAtAction("GetMunicipality", new { id = municipality.MunicipalityCode }, municipality);
         }
@@ -97,21 +104,21 @@ namespace TaxCalculator.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMunicipality(int id)
         {
-            var municipality = await _context.Municipalities.FindAsync(id);
+            var municipality = await _municipalityRepository.GetMunicipalityById(id);
             if (municipality == null)
             {
                 return NotFound();
             }
 
-            _context.Municipalities.Remove(municipality);
-            await _context.SaveChangesAsync();
+            await _municipalityRepository.Remove(municipality);
+            await _municipalityRepository.SaveChangesAsync();
 
             return NoContent();
         }
 
         private bool MunicipalityExists(int id)
         {
-            return _context.Municipalities.Any(e => e.MunicipalityCode == id);
+            return _municipalityRepository.MunicipalityExists(id);
         }
     }
 }
