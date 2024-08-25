@@ -1,4 +1,7 @@
 
+using Microsoft.EntityFrameworkCore;
+using TaxCalculator.Data;
+
 namespace TaxCalculator
 {
     public class Program
@@ -8,6 +11,9 @@ namespace TaxCalculator
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+
+            builder.Services.AddDbContext<DataContext>(options =>
+            options.UseInMemoryDatabase(builder.Configuration.GetConnectionString("TaxRecordDb")));
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
