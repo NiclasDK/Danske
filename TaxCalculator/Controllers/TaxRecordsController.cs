@@ -110,7 +110,8 @@ namespace TaxCalculator.Controllers
         {
             var taxRate = await _taxRecordsRepository.FindMunicipalityTaxRateAtDate(municipalityName, date);
 
-            if (taxRate == null || taxRate == 0) // Assuming tax rate of 0 means not found, adjust as needed
+            //TODO might be a better way
+            if (taxRate == null || taxRate == 0)
             {
                 return NotFound("No tax rate found for the given date.");
             }
