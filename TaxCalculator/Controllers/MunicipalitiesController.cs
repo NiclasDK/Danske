@@ -34,7 +34,21 @@ namespace TaxCalculator.Controllers
                 return NotFound();
             }
 
-            return municipality;
+            return Ok(municipality);
+        }
+
+        // GET: api/Municipalities/5
+        [HttpGet("{name}")]
+        public async Task<ActionResult<Municipality>> GetMunicipalityByName(string name)
+        {
+            var municipality = await _context.Municipalities.FirstOrDefaultAsync(m => m.Name == name);
+
+            if (municipality == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(municipality);
         }
 
         // PUT: api/Municipalities/5

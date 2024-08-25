@@ -34,7 +34,7 @@ namespace TaxCalculator.Controllers
                 return NotFound();
             }
 
-            return taxRecord;
+            return Ok(taxRecord);
         }
 
         // PUT: api/TaxRecords/5
