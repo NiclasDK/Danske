@@ -95,6 +95,26 @@ namespace TaxCalculator.Controllers
             return NoContent();
         }
 
+        // GET: api/Taxes/Copenhagen/2024-01-01
+        [HttpGet("{municipalityName}/{date}")]
+        public async Task<ActionResult<decimal>> GetTaxRate(string municipalityName, DateTime date)
+        {
+            decimal taxRate = await _context.Municipalities
+                .Where(m => m.Name == municipalityName)
+                .SelectMany(m => m.TaxRecords)
+                .Where(tr => tr.StartDate <= date && tr.EndDate >= date)
+                .OrderBy(tr => tr.TaxPrioritization)
+                .Select(tr => tr.TaxRate)
+                .FirstOrDefaultAsync();
+
+            if (taxRecord == null)
+            {
+                return NotFound("No tax rate found for the given date.");
+            }
+
+            return taxRecord.TaxRate;
+        }
+
         private bool TaxRecordExists(int id)
         {
             return _context.TaxRecords.Any(e => e.Id == id);
