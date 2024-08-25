@@ -13,6 +13,4 @@ namespace TaxCalculator.Models
         public string Name { get; set; }
         public ICollection<TaxRecord> TaxRecords { get; set; }
     }
-
-
 }
