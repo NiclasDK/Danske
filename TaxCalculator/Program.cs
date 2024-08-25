@@ -33,7 +33,6 @@ namespace TaxCalculator
 
             app.UseAuthorization();
 
-
             app.MapControllers();
 
             app.Run();
