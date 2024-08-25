@@ -22,6 +22,7 @@ namespace TaxCalculator
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddScoped<IMunicipalityRepository, MunicipalityRepository>();
+            builder.Services.AddScoped<ITaxRecordsRepository, TaxRecordRepository>();
 
 
             var app = builder.Build();

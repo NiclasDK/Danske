@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TaxCalculator.Data;
+using TaxCalculator.Interfaces;
 using TaxCalculator.Models;
 
 namespace TaxCalculator.Controllers
@@ -9,32 +10,39 @@ namespace TaxCalculator.Controllers
     [ApiController]
     public class TaxRecordsController : ControllerBase
     {
-        private readonly DataContext _context;
+        private readonly ITaxRecordsRepository _taxRecordsRepository;
 
-        public TaxRecordsController(DataContext context)
+        public TaxRecordsController(ITaxRecordsRepository taxRecordsRepository)
         {
-            _context = context;
+            _taxRecordsRepository = taxRecordsRepository;
         }
 
         // GET: api/TaxRecords
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TaxRecord>>> GetTaxRecords()
+        public async Task<ActionResult<IEnumerable<TaxRecord>>> GettaxRecords()
         {
-            return await _context.TaxRecords.ToListAsync();
+            var taxrecords = await _taxRecordsRepository.GetTaxRecords();
+
+            if (taxrecords == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(taxrecords);
         }
 
         // GET: api/TaxRecords/5
         [HttpGet("{id}")]
         public async Task<ActionResult<TaxRecord>> GetTaxRecord(int id)
         {
-            var taxRecord = await _context.TaxRecords.FindAsync(id);
+            var taxRecord = await _taxRecordsRepository.GetTaxRecord(id);
 
             if (taxRecord == null)
             {
                 return NotFound();
             }
 
-            return Ok(taxRecord);
+            return taxRecord;
         }
 
         // PUT: api/TaxRecords/5
@@ -47,11 +55,11 @@ namespace TaxCalculator.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(taxRecord).State = EntityState.Modified;
+            _taxRecordsRepository.SetEntryStateModified(taxRecord);
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _taxRecordsRepository.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -73,8 +81,8 @@ namespace TaxCalculator.Controllers
         [HttpPost]
         public async Task<ActionResult<TaxRecord>> PostTaxRecord(TaxRecord taxRecord)
         {
-            _context.TaxRecords.Add(taxRecord);
-            await _context.SaveChangesAsync();
+            await _taxRecordsRepository.Add(taxRecord);
+            await _taxRecordsRepository.SaveChangesAsync();
 
             return CreatedAtAction("GetTaxRecord", new { id = taxRecord.Id }, taxRecord);
         }
@@ -83,14 +91,15 @@ namespace TaxCalculator.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTaxRecord(int id)
         {
-            var taxRecord = await _context.TaxRecords.FindAsync(id);
+            var taxRecord = await _taxRecordsRepository.GetTaxRecord(id);
+
             if (taxRecord == null)
             {
                 return NotFound();
             }
 
-            _context.TaxRecords.Remove(taxRecord);
-            await _context.SaveChangesAsync();
+            await _taxRecordsRepository.Remove(taxRecord);
+            await _taxRecordsRepository.SaveChangesAsync();
 
             return NoContent();
         }
@@ -99,25 +108,19 @@ namespace TaxCalculator.Controllers
         [HttpGet("{municipalityName}/{date}")]
         public async Task<ActionResult<decimal>> GetTaxRate(string municipalityName, DateTime date)
         {
-            decimal taxRate = await _context.Municipalities
-                .Where(m => m.Name == municipalityName)
-                .SelectMany(m => m.TaxRecords)
-                .Where(tr => tr.StartDate <= date && tr.EndDate >= date)
-                .OrderByDescending(tr => tr.TaxPrioritization)
-                .Select(tr => tr.TaxRate)
-                .FirstOrDefaultAsync();
+            var taxRate = await _taxRecordsRepository.FindMunicipalityTaxRateAtDate(municipalityName, date);
 
-            if (taxRate == null || taxRate == 0)
+            if (taxRate == null || taxRate == 0) // Assuming tax rate of 0 means not found, adjust as needed
             {
                 return NotFound("No tax rate found for the given date.");
             }
 
-            return taxRate;
+            return Ok(taxRate);
         }
 
         private bool TaxRecordExists(int id)
         {
-            return _context.TaxRecords.Any(e => e.Id == id);
+            return _taxRecordsRepository.TaxRecordExists(id);
         }
     }
 }
