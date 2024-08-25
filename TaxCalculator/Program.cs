@@ -35,6 +35,12 @@ namespace TaxCalculator
 
             app.MapControllers();
 
+            using (var scope = app.Services.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<DataContext>();
+                context.Database.EnsureCreated();  // Ensures the in-memory database is created and seeded
+            }
+
             app.Run();
         }
     }
