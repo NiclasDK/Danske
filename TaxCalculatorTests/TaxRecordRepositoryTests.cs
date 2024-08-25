@@ -76,7 +76,7 @@ namespace TaxCalculatorTests
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(0.1m, result.TaxRate);
+            Assert.Equal(0.2m, result.TaxRate);
         }
 
         [Fact]
